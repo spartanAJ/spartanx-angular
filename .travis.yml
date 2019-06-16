@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+  - "10"
+dist: xenial
+sudo: required
+
+env:
+  global:
+    - USER="spartanAJ"
+    - REPO="spartanaj.github.io"
+    - FILES="dist/*"
+    - GH_REPO="github.com/${USER}/${REPO}.git"
+
+stages:
+  - test
+  - build
+
+before_script:
+  - npm install
+
+jobs:
+  include:
+    - stage: test
+      script: npm run-script test-headless
+
+    - if: branch != master
+      stage: build
+      script: npm run-script build-prd
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        local_dir: dist
+        
+
