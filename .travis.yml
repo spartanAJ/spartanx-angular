@@ -23,9 +23,11 @@ jobs:
         - npm run-script build-prod
       deploy:
         provider: pages
+        all_branches: true
         skip_cleanup: true
         github_token: $GITHUB_TOKEN
         local_dir: dist
+
     - if: branch = master
       name: "push to spartanaj.github.io"
       stage: build
