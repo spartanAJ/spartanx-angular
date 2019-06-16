@@ -45,6 +45,6 @@ jobs:
         - cd ${REPO}
         - git remote
         - git config user.name ${USER}
-        - git add --all . > /dev/null 2>&1
+        - git add --all .
         - git commit -m "${MESSAGE}"
-        - git push "https://${GITHUB_TOKEN}@${GH_REPO}" master > /dev/null 2>&1
+        - git push "https://${GITHUB_TOKEN}@${GH_REPO}" master
