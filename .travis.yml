@@ -38,13 +38,13 @@ jobs:
         - GH_REPO="github.com/${USER}/${REPO}.git"
       script:
         - npm run-script build-prod-main
-        - MESSAGE=$(git log --format=%B -n 1 $TRAVIS_COMMIT)
+        - MESSAGE=$(git log --format=%B -n 1 $TRAVIS_COMMIT); echo $MESSAGE
         - git clone git://${GH_REPO}
         - cd ${REPO}; rm -v !(".git") -rf; cd -
         - mv -f dist/* ${REPO}
         - cd ${REPO}
         - git remote
         - git config user.name ${USER}
-        - git add --all .
+        - git add --all . > /dev/null 2>&1
         - git commit -m ${MESSAGE}
         - git push "https://${GITHUB_TOKEN}@${GH_REPO}" master > /dev/null 2>&1
