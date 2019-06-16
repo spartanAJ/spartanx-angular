@@ -1,0 +1,50 @@
+language: node_js
+node_js:
+  - "10"
+dist: xenial
+sudo: required
+
+stages:
+  - test
+  - build
+
+before_script:
+  - npm install
+
+jobs:
+  include:
+    - stage: test
+      script: npm run-script test-headless
+
+    - if: branch != master
+      name: "push to gh-pages"
+      stage: build
+      script:
+        - npm run-script build-prod
+      deploy:
+        provider: pages
+        on:
+          all_branches: true
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        local_dir: dist
+
+    - if: branch = master
+      name: "push to spartanaj.github.io"
+      stage: build
+      env:
+        - USER="spartanAJ"
+        - REPO="spartanaj.github.io"
+        - GH_REPO="github.com/${USER}/${REPO}.git"
+      script:
+        - npm run-script build-prod-main
+        - MESSAGE=$(git log --format=%B -n 1 $TRAVIS_COMMIT)
+        - git clone git://${GH_REPO}
+        - cd ${REPO}; rm -v !(".git") -rf; cd -
+        - mv -f dist/* ${REPO}
+        - cd ${REPO}
+        - git remote
+        - git config user.name ${USER}
+        - git add --all .
+        - git commit -m ${MESSAGE}
+        - git push "https://${GITHUB_TOKEN}@${GH_REPO}" master > /dev/null 2>&1
